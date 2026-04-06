@@ -1,0 +1,198 @@
+--[[ 
+    PHANTOM NODE V15: RECOVERY EDITION (RE-ORGANIZED)
+    - Fitur: Full Map Save, Quick Save, Cancel Copy
+    - UI: Info Atas, Buttons Bawah (Mentok)
+]]
+
+local UIS = game:GetService("UserInputService")
+local CoreGui = game:GetService("CoreGui")
+local TweenService = game:GetService("TweenService")
+local Players = game:GetService("Players")
+local MarketplaceService = game:GetService("MarketplaceService")
+
+-- Hapus versi lama
+if CoreGui:FindFirstChild("PhantomNode_V15_Final") then
+    CoreGui.PhantomNode_V15_Final:Destroy()
+end
+
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "PhantomNode_V15_Final"
+ScreenGui.Parent = CoreGui
+ScreenGui.ResetOnSpawn = false
+
+-- DATA INFO
+local executor = (identifyexecutor and identifyexecutor()) or "Unknown"
+local gameName = MarketplaceService:GetProductInfo(game.PlaceId).Name
+local logoID = "rbxassetid://78561792675185"
+
+-- [ TOGGLE ICON ]
+local ToggleBtn = Instance.new("ImageButton")
+ToggleBtn.Name = "ToggleIcon"
+ToggleBtn.Parent = ScreenGui
+ToggleBtn.Size = UDim2.new(0, 55, 0, 55)
+ToggleBtn.Position = UDim2.new(0.05, 0, 0.2, 0)
+ToggleBtn.Image = logoID
+ToggleBtn.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+ToggleBtn.Visible = false
+Instance.new("UICorner", ToggleBtn).CornerRadius = UDim.new(1, 0)
+local ToggleStroke = Instance.new("UIStroke", ToggleBtn)
+ToggleStroke.Color = Color3.fromRGB(0, 255, 127)
+ToggleStroke.Thickness = 2
+
+-- [ MAIN FRAME ]
+local Main = Instance.new("Frame")
+Main.Name = "MainFrame"
+Main.Parent = ScreenGui
+Main.BackgroundColor3 = Color3.fromRGB(12, 14, 12)
+Main.Position = UDim2.new(0.5, -175, 0.4, -200)
+Main.Size = UDim2.new(0, 350, 0, 420)
+Main.BorderSizePixel = 0
+Instance.new("UICorner", Main).CornerRadius = UDim.new(0, 15)
+
+local MainStroke = Instance.new("UIStroke", Main)
+MainStroke.Color = Color3.fromRGB(0, 255, 127)
+MainStroke.Thickness = 2
+
+-- [ TOP BAR / HEADER ]
+local TopBar = Instance.new("Frame", Main)
+TopBar.Name = "TopBar"
+TopBar.Size = UDim2.new(1, 0, 0, 55)
+TopBar.BackgroundColor3 = Color3.fromRGB(20, 25, 20)
+Instance.new("UICorner", TopBar).CornerRadius = UDim.new(0, 15)
+
+local Logo = Instance.new("ImageLabel", TopBar)
+Logo.Position = UDim2.new(0.04, 0, 0.15, 0)
+Logo.Size = UDim2.new(0, 38, 0, 38)
+Logo.Image = logoID
+Logo.BackgroundTransparency = 1
+
+local Title = Instance.new("TextLabel", TopBar)
+Title.Position = UDim2.new(0.18, 0, 0, 0)
+Title.Size = UDim2.new(0.5, 0, 1, 0)
+Title.Text = "PHANTOM NODE V15"
+Title.TextColor3 = Color3.new(1, 1, 1)
+Title.Font = Enum.Font.GothamBold
+Title.TextSize = 14
+Title.TextXAlignment = Enum.TextXAlignment.Left
+Title.BackgroundTransparency = 1
+
+local CloseBtn = Instance.new("TextButton", TopBar)
+CloseBtn.Position = UDim2.new(0.85, 0, 0.2, 0)
+CloseBtn.Size = UDim2.new(0, 35, 0, 35)
+CloseBtn.Text = "_"
+CloseBtn.BackgroundColor3 = Color3.fromRGB(180, 40, 40)
+CloseBtn.TextColor3 = Color3.new(1, 1, 1)
+Instance.new("UICorner", CloseBtn)
+
+-- [ GAME & SYSTEM INFO PANEL ]
+local InfoPanel = Instance.new("Frame", Main)
+InfoPanel.Position = UDim2.new(0.05, 0, 0.15, 0)
+InfoPanel.Size = UDim2.new(0.9, 0, 0, 100)
+InfoPanel.BackgroundTransparency = 1
+
+local function CreateInfoLabel(text, pos, color)
+    local lbl = Instance.new("TextLabel", InfoPanel)
+    lbl.Position = pos
+    lbl.Size = UDim2.new(1, 0, 0, 25)
+    lbl.Text = text
+    lbl.TextColor3 = color or Color3.new(1,1,1)
+    lbl.Font = Enum.Font.GothamMedium
+    lbl.TextSize = 12
+    lbl.TextXAlignment = Enum.TextXAlignment.Left
+    lbl.BackgroundTransparency = 1
+    return lbl
+end
+
+local GLabel = CreateInfoLabel("📍 Game: " .. gameName, UDim2.new(0, 0, 0, 0))
+local ELabel = CreateInfoLabel("⚙️ Executor: " .. executor, UDim2.new(0, 0, 0.25, 0), Color3.fromRGB(0, 255, 127))
+local PLabel = CreateInfoLabel("👥 Server Count: " .. #Players:GetPlayers(), UDim2.new(0, 0, 0.5, 0))
+local SLabel = CreateInfoLabel("📡 Status: IDLE", UDim2.new(0, 0, 0.75, 0), Color3.fromRGB(200, 200, 200))
+
+-- [ BUTTON CONTAINER (MENTOK KE BAWAH) ]
+local ButtonContainer = Instance.new("Frame", Main)
+ButtonContainer.Position = UDim2.new(0, 0, 0.45, 0)
+ButtonContainer.Size = UDim2.new(1, 0, 0.55, 0)
+ButtonContainer.BackgroundTransparency = 1
+
+local function CreateActionBtn(text, pos, color)
+    local btn = Instance.new("TextButton", ButtonContainer)
+    btn.Text = text
+    btn.Position = pos
+    btn.Size = UDim2.new(0.9, 0, 0, 50)
+    btn.BackgroundColor3 = color
+    btn.Font = Enum.Font.GothamBold
+    btn.TextColor3 = Color3.new(1, 1, 1)
+    btn.TextSize = 13
+    Instance.new("UICorner", btn)
+    return btn
+end
+
+local CopyBtn = CreateActionBtn("💾 FULL MAP SAVE", UDim2.new(0.05, 0, 0.1, 0), Color3.fromRGB(0, 150, 80))
+local QuickBtn = CreateActionBtn("📥 QUICK CLONE", UDim2.new(0.05, 0, 0.4, 0), Color3.fromRGB(200, 140, 0))
+local CancelBtn = CreateActionBtn("🚫 BATALKAN COPY MAP", UDim2.new(0.05, 0, 0.7, 0), Color3.fromRGB(150, 0, 0))
+
+-- [ DRAGGABLE LOGIC ]
+local function MakeDraggable(frame, handle)
+    local dragging, dragInput, dragStart, startPos
+    handle.InputBegan:Connect(function(input)
+        if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) then
+            dragging = true
+            dragStart = input.Position
+            startPos = frame.Position
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then dragging = false end
+            end)
+        end
+    end)
+    handle.InputChanged:Connect(function(input)
+        if (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then dragInput = input end
+    end)
+    UIS.InputChanged:Connect(function(input)
+        if input == dragInput and dragging then
+            local delta = input.Position - dragStart
+            frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+        end
+    end)
+end
+MakeDraggable(Main, TopBar)
+MakeDraggable(ToggleBtn, ToggleBtn)
+
+-- [ TOGGLE LOGIC ]
+local function ToggleGUI()
+    Main.Visible = not Main.Visible
+    ToggleBtn.Visible = not Main.Visible
+end
+CloseBtn.MouseButton1Click:Connect(ToggleGUI)
+ToggleBtn.MouseButton1Click:Connect(ToggleGUI)
+
+-- [ SAVE LOGIC ]
+local isSaving = false
+local function ExecuteSave(mode)
+    if isSaving then return end
+    isSaving = true
+    SLabel.Text = "📡 Status: INJECTING..."
+    task.wait(1)
+    local saveinstance = loadstring(game:HttpGet("https://raw.githubusercontent.com/luau/SynSaveInstance/main/saveinstance.lua"))()
+    pcall(function()
+        saveinstance({mode = mode, terrain = true})
+    end)
+    SLabel.Text = "📡 Status: COMPLETED!"
+    isSaving = false
+end
+
+CopyBtn.MouseButton1Click:Connect(function() ExecuteSave("full") end)
+QuickBtn.MouseButton1Click:Connect(function() ExecuteSave("optimized") end)
+CancelBtn.MouseButton1Click:Connect(function() 
+    isSaving = false 
+    SLabel.Text = "📡 Status: CANCELLED" 
+    SLabel.TextColor3 = Color3.fromRGB(255, 50, 50)
+end)
+
+-- Update Player Count
+task.spawn(function()
+    while task.wait(3) do
+        PLabel.Text = "👥 Server Count: " .. #Players:GetPlayers()
+    end
+end)
+
+print("Phantom Node V15 Re-Organized Successfully!")
